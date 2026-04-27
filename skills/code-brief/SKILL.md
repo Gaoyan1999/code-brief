@@ -133,8 +133,12 @@ One paragraph describing the intended user or audience.
 One paragraph, no jargon. Analogies welcome.
 
 **Tech stack**
-Four columns: Category | Technology | Version (if known) | Notes.
-Rows: Language, Framework, Database, Infrastructure, Testing, CI/CD. Omit rows where nothing applies.
+Represent each technology as a linked visual chip/card with `logo + label`, and point the link to the official website for that technology.
+Reuse the same technologies in the top banner row, also as linked `logo + label` badges.
+If a trustworthy logo URL or official site cannot be identified from repo evidence or well-known official sources, omit that technology instead of guessing.
+For Markdown output, fall back to a compact list: `- [Technology](Official URL) — Category, Version/notes if known`.
+For HTML output, prefer a visual grid of clickable tech cards instead of a plain table.
+Include only technologies that are actually evidenced by the repository.
 
 **Architecture**
 ASCII box diagram (use Unicode box-drawing chars: ┌─┐ │ └─┘ ▼ ►) showing the high-level structure only. Think in layers:
@@ -195,6 +199,7 @@ Produce a single self-contained HTML file. All CSS inline. Mermaid.js loaded fro
 If the environment supports opening local files in a browser or preview, you may open `OVERVIEW.html` after writing it. If not, stop after saving the file.
 
 Read `template.html` (in the same directory as this skill file) to get the exact template structure. Fill in `[Project Name]`, `[subtitle]`, badge content, sidebar links, and section bodies. Only include sidebar links for cards that were generated.
+In the top banner, render the major stack items as linked badges that include both a logo and a text label.
 
 **Card IDs** — use these exact values so sidebar anchor links work:
 
@@ -217,6 +222,7 @@ Read `template.html` (in the same directory as this skill file) to get the exact
 Each card must be one `<div class="section" id="[card-id]">` block with a matching sidebar link. Do not nest cards under larger section headings. Use the card title as the `<h2>` inside the section header.
 
 Place Mermaid diagrams inside `<div class="mermaid">` elements. Architecture diagrams inside `<div class="architecture">` (HTML div-based boxes, not ASCII). Directory trees inside `<pre class="tree">`. Shell commands inside `<pre><code>` blocks.
+For the `Tech stack` card in HTML, render technologies as clickable cards using the template's `stack-grid` / `stack-card` structure so each item shows `logo + label` and opens the official website.
 
 ---
 
