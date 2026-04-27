@@ -124,7 +124,25 @@ Write the plain-English introduction cards entirely in plain English. No code bl
 One to two paragraphs: what the software does, what problem it solves, why someone would want it.
 
 **Key features**
-Bullet list of 5–8 user-facing capabilities. Write each as a benefit or action ("Lets you...", "Automatically...", "Supports..."), not as a technical feature name.
+5–8 user-facing capabilities. For HTML output, render as a `feature-grid` of `feature-card` elements. Each card has three parts:
+- `feature-icon`: a single relevant emoji
+- `feature-title`: a short bold action phrase (4–7 words, e.g. "Runs fully autonomously")
+- `feature-desc`: one concise sentence (≤15 words) saying what it does or why it matters
+
+Do not write long explanations. Keep descriptions scannable.
+
+Example card:
+```html
+<div class="feature-card">
+  <span class="feature-icon">🤖</span>
+  <span class="feature-title">Lets agents shop autonomously</span>
+  <span class="feature-desc">Agents authenticate with an API key and buy with no human in the loop.</span>
+</div>
+```
+
+Wrap all cards in `<div class="feature-grid">`.
+
+For Markdown output, fall back to a bullet list: `- **Short title** — one concise sentence.`
 
 **Who is it for?**
 One paragraph describing the intended user or audience.
