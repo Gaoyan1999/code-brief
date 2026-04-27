@@ -24,16 +24,15 @@ Collect both answers before continuing.
 - HTML (recommended) — styled page with collapsible sections, Mermaid diagrams rendered in-browser
 - Markdown — GitHub-compatible text; Mermaid in fenced code blocks
 
-**Question 2 — Sections** (header: "Sections", multiSelect: true):
-- Overview (recommended) — tech stack, annotated directory tree, entry points, quick-start commands
-- Feature Introduction — plain English: what it does, key features, who it's for, how it works
-- Deep-dive — architecture diagram, module breakdown, data/request flow, design patterns, external dependencies
-
-The user may select any combination. Generate all selected sections in the output, in the order listed above.
+**Question 2 — Depth** (header: "Depth"):
+- Quick Read + Deep Dive (recommended) — add repository map, entry points, module breakdown, data/request flow, design patterns, external dependencies
+- Quick Read only — plain-English introduction, tech stack, architecture, quick-start
 
 Default behavior if the user does not specify:
 - Output Format: HTML
-- Sections: Overview only
+- Include Quick Read cards only
+
+If the user has not already implied the depth they want, ask one concise follow-up: `Also include Deep Dive cards?`
 
 Record the answers before continuing.
 
@@ -81,9 +80,9 @@ Based on manifest files and directory scan, determine:
 - **Infrastructure/deployment**: Dockerfile, `vercel.json`, `fly.toml`, `.github/workflows/`, Terraform files
 - **Entry points**: `main.py`, `index.ts`, `src/main.rs`, `cmd/`, `app.py`, `server.js`, `__main__.py`, scripts in `package.json`
 
-### Step 2.4 — Deep source reading (Deep-dive section only)
+### Step 2.4 — Deep source reading (Deep Dive only)
 
-Only perform this step if the user selected Deep-dive.
+Only perform this step if the user selected Quick Read + Deep Dive.
 
 Read 4–8 key source files to understand internal architecture. Prioritize in this order:
 1. Entry point file(s) from Step 2.3
@@ -98,18 +97,62 @@ For each file read, note: what it does, what it imports from, and what depends o
 
 ## Phase 3: Generate Output Content
 
-Produce the content for each section the user selected, in order: Overview → Feature Introduction → Deep-dive. Then format it (Phase 4).
+Produce the content as individual cards. Do not group them under larger "Quick Read" or "Deep Dive" section headers. Generate cards in this order:
 
-### Overview mode
+1. What is this?
+2. Key features
+3. Who is it for?
+4. How it works
+5. Tech stack
+6. Architecture
+7. Quick start
+8. Repository map
+9. Entry points
+10. Key modules
+11. Data flow
+12. Design patterns
+13. External dependencies
 
-**Project name and purpose**
-Use the name from the manifest. Write a one-line purpose from the README description, or infer it from the project structure if no README exists.
+Generate cards 1–7 for every run. Generate cards 8–13 only if the user selected Quick Read + Deep Dive.
+Not every card must be generated. If the repository does not contain enough evidence to support a card, omit that card rather than inventing content.
 
-**Tech stack table**
+Use the name from the manifest for the project title. Write a one-line purpose from the README description, or infer it from the project structure if no README exists.
+
+Write the plain-English introduction cards entirely in plain English. No code blocks. No technical terms without immediate plain-language explanation. Target reading level: non-developer stakeholder.
+
+**What is this?**
+One to two paragraphs: what the software does, what problem it solves, why someone would want it.
+
+**Key features**
+Bullet list of 5–8 user-facing capabilities. Write each as a benefit or action ("Lets you...", "Automatically...", "Supports..."), not as a technical feature name.
+
+**Who is it for?**
+One paragraph describing the intended user or audience.
+
+**How it works**
+One paragraph, no jargon. Analogies welcome.
+
+**Tech stack**
 Four columns: Category | Technology | Version (if known) | Notes.
 Rows: Language, Framework, Database, Infrastructure, Testing, CI/CD. Omit rows where nothing applies.
 
-**Annotated directory tree**
+**Architecture**
+ASCII box diagram (use Unicode box-drawing chars: ┌─┐ │ └─┘ ▼ ►) showing the high-level structure only. Think in layers:
+- **Client**: web page, mobile app, or AI agent — pick whichever applies
+- **API boundary**: label the protocol (REST, GraphQL, WebSocket, gRPC, etc.)
+- **Backend services**: 2–4 named boxes for the key services only — no files, no functions
+- **Data / infra layer**: database(s) and any infra (queues, caches)
+- **External integrations**: third-party APIs that the backend calls out to
+
+Keep it concise. If it's a simple app (single service + DB), a 3-box diagram is enough. Do not mention files, modules, or implementation details here.
+
+**Markdown**: render as ASCII (Unicode box-drawing chars ┌─┐ │ └─┘ ▼ ►) inside a fenced code block, under ~20 lines.
+**HTML**: render as HTML `<div>` boxes styled inline — each node as a `<div class="arch-node">`, arrows as styled connectors — so the layout can be extended with CSS/JS later. Wrap the whole diagram in `<div class="architecture">`.
+
+**Quick start**
+Commands to install dependencies and run the project, pulled from README, Makefile, or `package.json` scripts. Infer standard patterns where needed (e.g. `npm install && npm run dev`). If genuinely unknown, say so rather than inventing commands.
+
+**Repository map**
 ASCII tree using box-drawing characters. Annotate each top-level directory with a short phrase. Annotate key individual files (entry points, config files, schema files). Do not annotate every file.
 
 ```
@@ -125,51 +168,13 @@ src/
 **Entry points**
 List each entry point: file path, how to invoke it, what it starts or does.
 
-**Quick start**
-Commands to install dependencies and run the project, pulled from README, Makefile, or `package.json` scripts. Infer standard patterns where needed (e.g. `npm install && npm run dev`). If genuinely unknown, say so rather than inventing commands.
-
----
-
-### Feature Introduction section
-
-Write entirely in plain English. No code blocks. No technical terms without immediate plain-language explanation. Target reading level: non-developer stakeholder.
-
-**What is this?**
-One to two paragraphs: what the software does, what problem it solves, why someone would want it.
-
-**Key features**
-Bullet list of 5–8 user-facing capabilities. Write each as a benefit or action ("Lets you...", "Automatically...", "Supports..."), not as a technical feature name.
-
-**Who is it for?**
-One paragraph describing the intended user or audience.
-
-**How it works**
-One paragraph, no jargon. Analogies welcome.
-
----
-
-### Deep-dive section
-
-**Architecture diagram**
-ASCII box diagram (use Unicode box-drawing chars: ┌─┐ │ └─┘ ▼ ►) showing the high-level structure only. Think in layers:
-- **Client**: web page, mobile app, or AI agent — pick whichever applies
-- **API boundary**: label the protocol (REST, GraphQL, WebSocket, gRPC, etc.)
-- **Backend services**: 2–4 named boxes for the key services only — no files, no functions
-- **Data / infra layer**: database(s) and any infra (queues, caches)
-- **External integrations**: third-party APIs that the backend calls out to
-
-Keep it concise. If it's a simple app (single service + DB), a 3-box diagram is enough. Do not mention files, modules, or implementation details here.
-
-**Markdown**: render as ASCII (Unicode box-drawing chars ┌─┐ │ └─┘ ▼ ►) inside a fenced code block, under ~20 lines.
-**HTML**: render as HTML `<div>` boxes styled inline — each node as a `<div class="arch-node">`, arrows as styled connectors — so the layout can be extended with CSS/JS later. Wrap the whole diagram in `<div class="architecture">`.
-
-**Key modules and their responsibilities**
+**Key modules**
 Table: Module/File | Responsibility | Key dependencies. One row per significant module from Step 2.4.
 
-**Data or request flow**
+**Data flow**
 Mermaid `sequenceDiagram` or `flowchart LR` tracing a representative request or data transformation from input to output. Choose the most characteristic flow for this type of application.
 
-**Notable design patterns**
+**Design patterns**
 Bullet list of patterns observed (dependency injection, repository pattern, event-driven, CQRS, middleware chain, etc.). One sentence of evidence per pattern cited. Do not list patterns not evidenced by the source read.
 
 **External dependencies**
@@ -181,7 +186,7 @@ Table: Dependency | Purpose | Notes. Production dependencies only, not dev/test 
 
 ### Markdown
 
-Write standard GitHub-flavored Markdown. Use `#` for project name, `##` for sections, `###` for subsections. Mermaid diagrams use triple-backtick fenced blocks with `mermaid` language tag. Save as `OVERVIEW.md` in the project root.
+Write standard GitHub-flavored Markdown. Use `#` for project name and `##` for each card title. Mermaid diagrams use triple-backtick fenced blocks with `mermaid` language tag. Save as `OVERVIEW.md` in the project root.
 
 ### HTML
 
@@ -189,27 +194,27 @@ Produce a single self-contained HTML file. All CSS inline. Mermaid.js loaded fro
 
 If the environment supports opening local files in a browser or preview, you may open `OVERVIEW.html` after writing it. If not, stop after saving the file.
 
-Read `template.html` (in the same directory as this skill file) to get the exact template structure. Fill in `[Project Name]`, `[subtitle]`, badge content, sidebar links, and section bodies. Only include sidebar links for sections the user selected.
+Read `template.html` (in the same directory as this skill file) to get the exact template structure. Fill in `[Project Name]`, `[subtitle]`, badge content, sidebar links, and section bodies. Only include sidebar links for cards that were generated.
 
-**Section and subsection IDs** — use these exact values so sidebar anchor links work:
+**Card IDs** — use these exact values so sidebar anchor links work:
 
-| Section | Section ID | Subsection | Subsection ID |
-|---|---|---|---|
-| Overview | `overview` | Tech Stack | `overview-tech-stack` |
-| | | Directory Tree | `overview-directory-tree` |
-| | | Entry Points | `overview-entry-points` |
-| | | Quick Start | `overview-quick-start` |
-| Feature Introduction | `feature-introduction` | What is this? | `feature-what-is-this` |
-| | | Key Features | `feature-key-features` |
-| | | Who is it for? | `feature-who-is-it-for` |
-| | | How it works | `feature-how-it-works` |
-| Deep-dive | `deep-dive` | Architecture | `deep-architecture` |
-| | | Key Modules | `deep-key-modules` |
-| | | Data Flow | `deep-data-flow` |
-| | | Design Patterns | `deep-design-patterns` |
-| | | Dependencies | `deep-dependencies` |
+| Card | ID |
+|---|---|
+| What is this? | `what-is-this` |
+| Key features | `key-features` |
+| Who is it for? | `who-is-it-for` |
+| How it works | `how-it-works` |
+| Tech stack | `tech-stack` |
+| Architecture | `architecture` |
+| Quick start | `quick-start` |
+| Repository map | `repository-map` |
+| Entry points | `entry-points` |
+| Key modules | `key-modules` |
+| Data flow | `data-flow` |
+| Design patterns | `design-patterns` |
+| External dependencies | `dependencies` |
 
-Each subsection heading must be `<h3 id="[subsection-id]">Title</h3>`. The sidebar must include nested `<ul>` sub-links for each subsection within a selected section (see commented examples in `template.html`).
+Each card must be one `<div class="section" id="[card-id]">` block with a matching sidebar link. Do not nest cards under larger section headings. Use the card title as the `<h2>` inside the section header.
 
 Place Mermaid diagrams inside `<div class="mermaid">` elements. Architecture diagrams inside `<div class="architecture">` (HTML div-based boxes, not ASCII). Directory trees inside `<pre class="tree">`. Shell commands inside `<pre><code>` blocks.
 
