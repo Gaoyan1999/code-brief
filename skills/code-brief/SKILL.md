@@ -1,6 +1,6 @@
 ---
 name: code-brief
-description: Use this skill when the user runs /code-brief, asks to "analyze this codebase", "explain this project", "generate a project overview", "document this repo", "create a codebase summary", "I want to understand this code", or says "give me a brief/overview/intro for this project". Produces a structured HTML or Markdown document saved to the project root describing what the project does, how it's built, and how to navigate it.
+description: Generate a structured HTML or Markdown overview of a codebase.
 ---
 
 # /code-brief — Codebase Overview Generator
@@ -17,10 +17,12 @@ Ask both questions in a single AskUserQuestion call so the user fills them out a
 - HTML (recommended) — styled page with collapsible sections, Mermaid diagrams rendered in-browser
 - Markdown — GitHub-compatible text; Mermaid in fenced code blocks
 
-**Question 2 — Depth** (header: "Depth"):
+**Question 2 — Sections** (header: "Sections", multiSelect: true):
 - Overview (recommended) — tech stack, annotated directory tree, entry points, quick-start commands
-- Non-technical — plain English: what it does, key features, who it's for, how it works
-- Deep-dive — everything in Overview plus architecture diagram, module breakdown, data/request flow, design patterns, external dependencies
+- Feature Introduction — plain English: what it does, key features, who it's for, how it works
+- Deep-dive — architecture diagram, module breakdown, data/request flow, design patterns, external dependencies
+
+The user may select any combination. Generate all selected sections in the output, in the order listed above.
 
 Record the answers before continuing.
 
@@ -68,7 +70,7 @@ Based on manifest files and directory scan, determine:
 - **Infrastructure/deployment**: Dockerfile, `vercel.json`, `fly.toml`, `.github/workflows/`, Terraform files
 - **Entry points**: `main.py`, `index.ts`, `src/main.rs`, `cmd/`, `app.py`, `server.js`, `__main__.py`, scripts in `package.json`
 
-### Step 2.4 — Deep source reading (deep-dive mode only)
+### Step 2.4 — Deep source reading (Deep-dive section only)
 
 Only perform this step if the user selected Deep-dive.
 
@@ -85,7 +87,7 @@ For each file read, note: what it does, what it imports from, and what depends o
 
 ## Phase 3: Generate Output Content
 
-Produce the content for the chosen depth mode. Then format it (Phase 4).
+Produce the content for each section the user selected, in order: Overview → Feature Introduction → Deep-dive. Then format it (Phase 4).
 
 ### Overview mode
 
@@ -117,7 +119,7 @@ Commands to install dependencies and run the project, pulled from README, Makefi
 
 ---
 
-### Non-technical mode
+### Feature Introduction section
 
 Write entirely in plain English. No code blocks. No technical terms without immediate plain-language explanation. Target reading level: non-developer stakeholder.
 
@@ -135,9 +137,7 @@ One paragraph, no jargon. Analogies welcome.
 
 ---
 
-### Deep-dive mode
-
-Include all Overview sections, then add:
+### Deep-dive section
 
 **Architecture diagram**
 Mermaid `graph TD` or `graph LR` diagram showing major components and their relationships. Include: entry point(s), service/application layer, data layer, external services. Cap at 10–15 nodes — clarity beats completeness.
@@ -166,110 +166,27 @@ Write standard GitHub-flavored Markdown. Use `#` for project name, `##` for sect
 
 Produce a single self-contained HTML file. All CSS inline. Mermaid.js loaded from CDN. Save as `OVERVIEW.html` in the project root, then run `open OVERVIEW.html`.
 
-Use this exact template structure — fill in `[Project Name]`, `[subtitle]`, badge content, and section bodies:
+Read `template.html` (in the same directory as this skill file) to get the exact template structure. Fill in `[Project Name]`, `[subtitle]`, badge content, sidebar links, and section bodies. Only include sidebar links for sections the user selected.
 
-```html
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>[Project Name] — Overview</title>
-  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      font-size: 15px; line-height: 1.6; color: #1a1a2e; background: #f8f9fc;
-    }
-    .page-header {
-      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 60%, #0f3460 100%);
-      color: #fff; padding: 3rem 2rem 2rem; text-align: center;
-    }
-    .page-header h1 { font-size: 2.4rem; font-weight: 700; letter-spacing: -0.02em; }
-    .page-header .subtitle { font-size: 1.1rem; opacity: 0.8; margin-top: 0.5rem; }
-    .badge-row { display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap; margin-top: 1rem; }
-    .badge {
-      background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.2);
-      border-radius: 999px; padding: 0.2rem 0.75rem; font-size: 0.8rem; font-weight: 500;
-    }
-    main { max-width: 900px; margin: 2rem auto; padding: 0 1.5rem; }
-    .section {
-      background: #fff; border-radius: 12px; border: 1px solid #e8eaf0;
-      margin-bottom: 1.5rem; overflow: hidden;
-    }
-    .section-header {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 1rem 1.5rem; cursor: pointer; user-select: none;
-      border-bottom: 1px solid #e8eaf0;
-    }
-    .section-header h2 { font-size: 1rem; font-weight: 600; color: #1a1a2e; }
-    .section-header .toggle { font-size: 0.75rem; color: #888; }
-    .section-body { padding: 1.5rem; }
-    .section-body.collapsed { display: none; }
-    table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
-    th {
-      background: #f4f5f8; text-align: left; padding: 0.6rem 1rem;
-      font-weight: 600; font-size: 0.8rem; text-transform: uppercase;
-      letter-spacing: 0.05em; color: #555;
-    }
-    td { padding: 0.6rem 1rem; border-top: 1px solid #eee; vertical-align: top; }
-    tr:hover td { background: #fafbff; }
-    pre.tree {
-      font-family: "SFMono-Regular", Consolas, monospace; font-size: 0.85rem;
-      line-height: 1.7; background: #f4f5f8; border-radius: 8px;
-      padding: 1rem 1.25rem; overflow-x: auto;
-    }
-    code {
-      font-family: "SFMono-Regular", Consolas, monospace; font-size: 0.85em;
-      background: #f0f1f5; border-radius: 4px; padding: 0.1em 0.35em;
-    }
-    pre:not(.tree) {
-      background: #1a1a2e; color: #e8eaf0; border-radius: 8px;
-      padding: 1rem 1.25rem; overflow-x: auto; line-height: 1.6;
-    }
-    pre:not(.tree) code { background: none; padding: 0; font-size: 0.85rem; }
-    .mermaid { text-align: center; padding: 1rem 0; }
-    ul, ol { padding-left: 1.5rem; }
-    li { margin: 0.3rem 0; }
-    p + p { margin-top: 0.75rem; }
-    footer { text-align: center; color: #aaa; font-size: 0.8rem; padding: 2rem 0 3rem; }
-  </style>
-</head>
-<body>
-<header class="page-header">
-  <h1>[Project Name]</h1>
-  <p class="subtitle">[One-line purpose]</p>
-  <div class="badge-row">
-    <span class="badge">[Language]</span>
-    <span class="badge">[Framework]</span>
-    <!-- add one badge per major stack element -->
-  </div>
-</header>
-<main>
-  <!-- Repeat this block for each section -->
-  <div class="section">
-    <div class="section-header" onclick="toggle(this)">
-      <h2>Section Title</h2>
-      <span class="toggle">▾</span>
-    </div>
-    <div class="section-body">
-      <!-- section content -->
-    </div>
-  </div>
-</main>
-<footer>Generated by /code-brief · [Date]</footer>
-<script>
-  mermaid.initialize({ startOnLoad: true, theme: 'neutral', securityLevel: 'loose' });
-  function toggle(header) {
-    const body = header.nextElementSibling;
-    const isCollapsed = body.classList.toggle('collapsed');
-    header.querySelector('.toggle').textContent = isCollapsed ? '▸' : '▾';
-  }
-</script>
-</body>
-</html>
-```
+**Section and subsection IDs** — use these exact values so sidebar anchor links work:
+
+| Section | Section ID | Subsection | Subsection ID |
+|---|---|---|---|
+| Overview | `overview` | Tech Stack | `overview-tech-stack` |
+| | | Directory Tree | `overview-directory-tree` |
+| | | Entry Points | `overview-entry-points` |
+| | | Quick Start | `overview-quick-start` |
+| Feature Introduction | `feature-introduction` | What is this? | `feature-what-is-this` |
+| | | Key Features | `feature-key-features` |
+| | | Who is it for? | `feature-who-is-it-for` |
+| | | How it works | `feature-how-it-works` |
+| Deep-dive | `deep-dive` | Architecture | `deep-architecture` |
+| | | Key Modules | `deep-key-modules` |
+| | | Data Flow | `deep-data-flow` |
+| | | Design Patterns | `deep-design-patterns` |
+| | | Dependencies | `deep-dependencies` |
+
+Each subsection heading must be `<h3 id="[subsection-id]">Title</h3>`. The sidebar must include nested `<ul>` sub-links for each subsection within a selected section (see commented examples in `template.html`).
 
 Place Mermaid diagrams inside `<div class="mermaid">` elements. Directory trees inside `<pre class="tree">`. Shell commands inside `<pre><code>` blocks.
 
