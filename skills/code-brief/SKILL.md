@@ -140,7 +140,17 @@ One paragraph, no jargon. Analogies welcome.
 ### Deep-dive section
 
 **Architecture diagram**
-Mermaid `graph TD` or `graph LR` diagram showing major components and their relationships. Include: entry point(s), service/application layer, data layer, external services. Cap at 10–15 nodes — clarity beats completeness.
+ASCII box diagram (use Unicode box-drawing chars: ┌─┐ │ └─┘ ▼ ►) showing the high-level structure only. Think in layers:
+- **Client**: web page, mobile app, or AI agent — pick whichever applies
+- **API boundary**: label the protocol (REST, GraphQL, WebSocket, gRPC, etc.)
+- **Backend services**: 2–4 named boxes for the key services only — no files, no functions
+- **Data / infra layer**: database(s) and any infra (queues, caches)
+- **External integrations**: third-party APIs that the backend calls out to
+
+Keep it concise. If it's a simple app (single service + DB), a 3-box diagram is enough. Do not mention files, modules, or implementation details here.
+
+**Markdown**: render as ASCII (Unicode box-drawing chars ┌─┐ │ └─┘ ▼ ►) inside a fenced code block, under ~20 lines.
+**HTML**: render as HTML `<div>` boxes styled inline — each node as a `<div class="arch-node">`, arrows as styled connectors — so the layout can be extended with CSS/JS later. Wrap the whole diagram in `<div class="architecture">`.
 
 **Key modules and their responsibilities**
 Table: Module/File | Responsibility | Key dependencies. One row per significant module from Step 2.4.
@@ -188,7 +198,7 @@ Read `template.html` (in the same directory as this skill file) to get the exact
 
 Each subsection heading must be `<h3 id="[subsection-id]">Title</h3>`. The sidebar must include nested `<ul>` sub-links for each subsection within a selected section (see commented examples in `template.html`).
 
-Place Mermaid diagrams inside `<div class="mermaid">` elements. Directory trees inside `<pre class="tree">`. Shell commands inside `<pre><code>` blocks.
+Place Mermaid diagrams inside `<div class="mermaid">` elements. Architecture diagrams inside `<div class="architecture">` (HTML div-based boxes, not ASCII). Directory trees inside `<pre class="tree">`. Shell commands inside `<pre><code>` blocks.
 
 ---
 
