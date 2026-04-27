@@ -1,6 +1,6 @@
 ---
 name: code-brief
-description: Use this skill when the user runs /code-brief, asks to "analyze this codebase", "explain this project", "generate a project overview", "document this repo", "create a codebase summary", "I want to understand this code", or says "give me a brief/overview/intro for this project". Produces a structured HTML or Markdown document saved to the project root describing what the project does, how it's built, and how to navigate it.
+description: Generate a structured HTML or Markdown overview of a codebase.
 ---
 
 # /code-brief — Codebase Overview Generator
