@@ -7,11 +7,18 @@ description: Generate a structured HTML or Markdown overview of a codebase.
 
 Analyze the codebase in the current working directory and produce a structured document explaining it. Save the output as `OVERVIEW.html` or `OVERVIEW.md` in the project root.
 
+This skill is intended to work in both Claude Code and Codex.
+- In Claude Code, `/code-brief` may be exposed as a slash command.
+- In Codex, use the installed skill by naming `code-brief` in the prompt. Some Codex clients may also expose it as `/code-brief`, but do not assume slash-command support.
+
 ---
 
 ## Phase 1: Ask the User
 
-Ask both questions in a single AskUserQuestion call so the user fills them out at once.
+Collect both answers before continuing.
+
+- In Claude Code, prefer a single `AskUserQuestion` call so the user can answer both at once.
+- In Codex or any environment without structured question UI, ask a concise single message covering both choices, or proceed with defaults if the user already implied them.
 
 **Question 1 — Output Format** (header: "Format"):
 - HTML (recommended) — styled page with collapsible sections, Mermaid diagrams rendered in-browser
@@ -23,6 +30,10 @@ Ask both questions in a single AskUserQuestion call so the user fills them out a
 - Deep-dive — architecture diagram, module breakdown, data/request flow, design patterns, external dependencies
 
 The user may select any combination. Generate all selected sections in the output, in the order listed above.
+
+Default behavior if the user does not specify:
+- Output Format: HTML
+- Sections: Overview only
 
 Record the answers before continuing.
 
@@ -174,7 +185,9 @@ Write standard GitHub-flavored Markdown. Use `#` for project name, `##` for sect
 
 ### HTML
 
-Produce a single self-contained HTML file. All CSS inline. Mermaid.js loaded from CDN. Save as `OVERVIEW.html` in the project root, then run `open OVERVIEW.html`.
+Produce a single self-contained HTML file. All CSS inline. Mermaid.js loaded from CDN. Save as `OVERVIEW.html` in the project root.
+
+If the environment supports opening local files in a browser or preview, you may open `OVERVIEW.html` after writing it. If not, stop after saving the file.
 
 Read `template.html` (in the same directory as this skill file) to get the exact template structure. Fill in `[Project Name]`, `[subtitle]`, badge content, sidebar links, and section bodies. Only include sidebar links for sections the user selected.
 
