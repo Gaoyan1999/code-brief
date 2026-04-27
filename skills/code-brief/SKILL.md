@@ -17,10 +17,12 @@ Ask both questions in a single AskUserQuestion call so the user fills them out a
 - HTML (recommended) — styled page with collapsible sections, Mermaid diagrams rendered in-browser
 - Markdown — GitHub-compatible text; Mermaid in fenced code blocks
 
-**Question 2 — Depth** (header: "Depth"):
+**Question 2 — Sections** (header: "Sections", multiSelect: true):
 - Overview (recommended) — tech stack, annotated directory tree, entry points, quick-start commands
-- Non-technical — plain English: what it does, key features, who it's for, how it works
-- Deep-dive — everything in Overview plus architecture diagram, module breakdown, data/request flow, design patterns, external dependencies
+- Feature Introduction — plain English: what it does, key features, who it's for, how it works
+- Deep-dive — architecture diagram, module breakdown, data/request flow, design patterns, external dependencies
+
+The user may select any combination. Generate all selected sections in the output, in the order listed above.
 
 Record the answers before continuing.
 
@@ -68,7 +70,7 @@ Based on manifest files and directory scan, determine:
 - **Infrastructure/deployment**: Dockerfile, `vercel.json`, `fly.toml`, `.github/workflows/`, Terraform files
 - **Entry points**: `main.py`, `index.ts`, `src/main.rs`, `cmd/`, `app.py`, `server.js`, `__main__.py`, scripts in `package.json`
 
-### Step 2.4 — Deep source reading (deep-dive mode only)
+### Step 2.4 — Deep source reading (Deep-dive section only)
 
 Only perform this step if the user selected Deep-dive.
 
@@ -85,7 +87,7 @@ For each file read, note: what it does, what it imports from, and what depends o
 
 ## Phase 3: Generate Output Content
 
-Produce the content for the chosen depth mode. Then format it (Phase 4).
+Produce the content for each section the user selected, in order: Overview → Feature Introduction → Deep-dive. Then format it (Phase 4).
 
 ### Overview mode
 
@@ -117,7 +119,7 @@ Commands to install dependencies and run the project, pulled from README, Makefi
 
 ---
 
-### Non-technical mode
+### Feature Introduction section
 
 Write entirely in plain English. No code blocks. No technical terms without immediate plain-language explanation. Target reading level: non-developer stakeholder.
 
@@ -135,9 +137,7 @@ One paragraph, no jargon. Analogies welcome.
 
 ---
 
-### Deep-dive mode
-
-Include all Overview sections, then add:
+### Deep-dive section
 
 **Architecture diagram**
 Mermaid `graph TD` or `graph LR` diagram showing major components and their relationships. Include: entry point(s), service/application layer, data layer, external services. Cap at 10–15 nodes — clarity beats completeness.
