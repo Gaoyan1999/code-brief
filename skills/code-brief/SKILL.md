@@ -74,6 +74,11 @@ For each directory, form a working hypothesis about its role: source code, tests
 
 Based on manifest files and directory scan, determine:
 
+- **System type**: classify the project as one of these before deciding how to explain architecture:
+  - `Application` — user-facing product or service with clear business workflows
+  - `Framework / Library` — reusable APIs, runtime, compiler, SDK, or developer tooling
+  - `Platform / Infrastructure` — control plane, data plane, networking, orchestration, storage, or runtime substrate
+  - `Pipeline / Data system` — ingestion, transformation, scheduling, batch/stream processing, model or analytics flow
 - **Primary language(s)**: infer from file extensions if no manifest confirms it
 - **Framework(s)**: look for framework-specific markers (`next.config.js` → Next.js, `manage.py` → Django, `tokio` in Cargo.toml → async Rust, etc.)
 - **Database/storage**: ORM configs, migration directories, connection strings in `.env.example`
@@ -159,14 +164,24 @@ For the banner badges only, point links to the official technology websites and 
 Include only technologies that are actually evidenced by the repository.
 
 **Architecture**
-ASCII box diagram (use Unicode box-drawing chars: ┌─┐ │ └─┘ ▼ ►) showing the high-level structure only. Think in layers:
-- **Client**: web page, mobile app, or AI agent — pick whichever applies
-- **API boundary**: label the protocol (REST, GraphQL, WebSocket, gRPC, etc.)
-- **Backend services**: 2–4 named boxes for the key services only — no files, no functions
-- **Data / infra layer**: database(s) and any infra (queues, caches)
-- **External integrations**: third-party APIs that the backend calls out to
+Draw a layered high-level diagram that optimizes for flow clarity, not component count. Start by asking:
+- What is the main input? User action, HTTP request, developer API call, scheduled job, event, or message
+- How does that input move from one layer to the next?
+- What communication style connects the layers? HTTPS, REST, GraphQL, function call, event bus, queue, reactive update, compiler pass, etc.
+- What is the final destination? Rendered UI, service response, persisted data, emitted artifact, external side effect
 
-Keep it concise. If it's a simple app (single service + DB), a 3-box diagram is enough. Do not mention files, modules, or implementation details here.
+Structure the diagram around 3–5 layers. Label each layer clearly and place 2–5 core components inside it when evidence exists. Prefer stable responsibilities over implementation detail.
+
+Choose the layer model that best fits the project type:
+- **Application**: `Entry / Presentation -> Communication -> Service / Domain -> Data / Infrastructure`
+  - Typical web example: user or browser -> web app -> `HTTPS / REST` -> backend service groups -> MySQL / MongoDB / Redis
+  - The communication layer may be collapsed into a labeled connector if it is simple
+- **Framework / Library**: `Consumer -> Public Interface -> Runtime Coordination -> Core Mechanism -> Platform Target`
+  - Example shape for Vue-like systems: developer code or user events -> public API -> scheduler / component runtime -> reactivity / renderer / compiler -> DOM / SSR / custom target
+- **Platform / Infrastructure**: `Operator / Client -> API / Control Plane -> Workers / Data Plane -> Storage / Network / Runtime`
+- **Pipeline / Data system**: `Sources -> Ingestion -> Processing / Orchestration -> Storage / Serving -> Outputs / Consumers`
+
+Keep it concise. A simple project may only need 3 boxes. Do not mention files, functions, classes, or low-level implementation details here. The goal is to make the main flow legible at a glance.
 
 **Markdown**: render as ASCII (Unicode box-drawing chars ┌─┐ │ └─┘ ▼ ►) inside a fenced code block, under ~20 lines.
 **HTML**: render as HTML `<div>` boxes styled inline — each node as a `<div class="arch-node">`, arrows as styled connectors — so the layout can be extended with CSS/JS later. Wrap the whole diagram in `<div class="architecture">`.
@@ -194,7 +209,13 @@ List each entry point: file path, how to invoke it, what it starts or does.
 Table: Module/File | Responsibility | Key dependencies. One row per significant module from Step 2.4.
 
 **Data flow**
-Mermaid `sequenceDiagram` or `flowchart LR` tracing a representative request or data transformation from input to output. Choose the most characteristic flow for this type of application.
+Mermaid `sequenceDiagram` or `flowchart LR` tracing one representative end-to-end flow from input to output. Choose the most characteristic flow for the detected system type:
+- Application: user action or request through presentation, communication, service, and data layers
+- Framework / Library: developer call, state change, or runtime event through public API, coordination layer, and core mechanism
+- Platform / Infrastructure: operator or client request through control plane into workers, storage, or runtime substrate
+- Pipeline / Data system: source event or batch input through ingestion, transform stages, and output sink
+
+The flow should reinforce the Architecture card. Use layer-oriented labels, not file names, unless a specific named service or subsystem is the clearest unit.
 
 **Design patterns**
 Bullet list of patterns observed (dependency injection, repository pattern, event-driven, CQRS, middleware chain, etc.). One sentence of evidence per pattern cited. Do not list patterns not evidenced by the source read.
