@@ -124,7 +124,25 @@ Write the plain-English introduction cards entirely in plain English. No code bl
 One to two paragraphs: what the software does, what problem it solves, why someone would want it.
 
 **Key features**
-Bullet list of 5–8 user-facing capabilities. Write each as a benefit or action ("Lets you...", "Automatically...", "Supports..."), not as a technical feature name.
+5–8 user-facing capabilities. For HTML output, render as a `feature-grid` of `feature-card` elements. Each card has three parts:
+- `feature-icon`: a single relevant emoji
+- `feature-title`: a short bold action phrase (4–7 words, e.g. "Runs fully autonomously")
+- `feature-desc`: one concise sentence (≤15 words) saying what it does or why it matters
+
+Do not write long explanations. Keep descriptions scannable.
+
+Example card:
+```html
+<div class="feature-card">
+  <span class="feature-icon">🤖</span>
+  <span class="feature-title">Lets agents shop autonomously</span>
+  <span class="feature-desc">Agents authenticate with an API key and buy with no human in the loop.</span>
+</div>
+```
+
+Wrap all cards in `<div class="feature-grid">`.
+
+For Markdown output, fall back to a bullet list: `- **Short title** — one concise sentence.`
 
 **Who is it for?**
 One paragraph describing the intended user or audience.
@@ -133,8 +151,12 @@ One paragraph describing the intended user or audience.
 One paragraph, no jargon. Analogies welcome.
 
 **Tech stack**
-Four columns: Category | Technology | Version (if known) | Notes.
-Rows: Language, Framework, Database, Infrastructure, Testing, CI/CD. Omit rows where nothing applies.
+Render this section as a table with four columns: `Category | Technology | Version | Notes`.
+Keep technologies of the same category adjacent to each other. Sort primarily by category, then by the importance or prominence evidenced in the repository.
+Use one row per stack item. If multiple tightly-coupled tools are conventionally presented together, they may share one row in the `Technology` column, with versions combined in the `Version` column.
+Reuse the major technologies from this table in the top banner row as linked `logo + label` badges.
+For the banner badges only, point links to the official technology websites and include logos when a trustworthy logo URL and official site can be identified from repo evidence or well-known official sources. If not, omit that badge rather than guessing.
+Include only technologies that are actually evidenced by the repository.
 
 **Architecture**
 ASCII box diagram (use Unicode box-drawing chars: ┌─┐ │ └─┘ ▼ ►) showing the high-level structure only. Think in layers:
@@ -195,6 +217,7 @@ Produce a single self-contained HTML file. All CSS inline. Mermaid.js loaded fro
 If the environment supports opening local files in a browser or preview, you may open `OVERVIEW.html` after writing it. If not, stop after saving the file.
 
 Read `template.html` (in the same directory as this skill file) to get the exact template structure. Fill in `[Project Name]`, `[subtitle]`, badge content, sidebar links, and section bodies. Only include sidebar links for cards that were generated.
+In the top banner, render the major stack items as linked badges that include both a logo and a text label.
 
 **Card IDs** — use these exact values so sidebar anchor links work:
 
@@ -217,6 +240,7 @@ Read `template.html` (in the same directory as this skill file) to get the exact
 Each card must be one `<div class="section" id="[card-id]">` block with a matching sidebar link. Do not nest cards under larger section headings. Use the card title as the `<h2>` inside the section header.
 
 Place Mermaid diagrams inside `<div class="mermaid">` elements. Architecture diagrams inside `<div class="architecture">` (HTML div-based boxes, not ASCII). Directory trees inside `<pre class="tree">`. Shell commands inside `<pre><code>` blocks.
+For the `Tech stack` card in both HTML and Markdown, render a normal table with `Category`, `Technology`, `Version`, and `Notes` columns. Keep same-category rows grouped together.
 
 ---
 
