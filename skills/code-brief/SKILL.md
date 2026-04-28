@@ -151,11 +151,11 @@ One paragraph describing the intended user or audience.
 One paragraph, no jargon. Analogies welcome.
 
 **Tech stack**
-Represent each technology as a linked visual chip/card with `logo + label`, and point the link to the official website for that technology.
-Reuse the same technologies in the top banner row, also as linked `logo + label` badges.
-If a trustworthy logo URL or official site cannot be identified from repo evidence or well-known official sources, omit that technology instead of guessing.
-For Markdown output, fall back to a compact list: `- [Technology](Official URL) — Category, Version/notes if known`.
-For HTML output, prefer a visual grid of clickable tech cards instead of a plain table.
+Render this section as a table with four columns: `Category | Technology | Version | Notes`.
+Keep technologies of the same category adjacent to each other. Sort primarily by category, then by the importance or prominence evidenced in the repository.
+Use one row per stack item. If multiple tightly-coupled tools are conventionally presented together, they may share one row in the `Technology` column, with versions combined in the `Version` column.
+Reuse the major technologies from this table in the top banner row as linked `logo + label` badges.
+For the banner badges only, point links to the official technology websites and include logos when a trustworthy logo URL and official site can be identified from repo evidence or well-known official sources. If not, omit that badge rather than guessing.
 Include only technologies that are actually evidenced by the repository.
 
 **Architecture**
@@ -240,7 +240,7 @@ In the top banner, render the major stack items as linked badges that include bo
 Each card must be one `<div class="section" id="[card-id]">` block with a matching sidebar link. Do not nest cards under larger section headings. Use the card title as the `<h2>` inside the section header.
 
 Place Mermaid diagrams inside `<div class="mermaid">` elements. Architecture diagrams inside `<div class="architecture">` (HTML div-based boxes, not ASCII). Directory trees inside `<pre class="tree">`. Shell commands inside `<pre><code>` blocks.
-For the `Tech stack` card in HTML, render technologies as clickable cards using the template's `stack-grid` / `stack-card` structure so each item shows `logo + label` and opens the official website.
+For the `Tech stack` card in both HTML and Markdown, render a normal table with `Category`, `Technology`, `Version`, and `Notes` columns. Keep same-category rows grouped together.
 
 ---
 
