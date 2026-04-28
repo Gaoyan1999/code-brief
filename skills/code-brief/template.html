@@ -216,6 +216,65 @@
     }
     pre:not(.tree) code { background: none; padding: 0; font-size: 0.85rem; color: #fdfbf7; }
     .mermaid { text-align: center; padding: 1rem 0; }
+    .architecture {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0.9rem;
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 0.5rem 0;
+    }
+    .arch-layer {
+      display: flex;
+      flex-direction: column;
+      gap: 0.7rem;
+      padding: 1rem 1.1rem;
+      background: #fdfbf7;
+      border: 2px solid #2d2d2d;
+      border-radius: 20px 28px 18px 24px;
+      box-shadow: 3px 3px 0px 0px #2d2d2d;
+    }
+    .arch-layer-title {
+      font-family: 'Kalam', cursive;
+      font-size: 1rem;
+      font-weight: 700;
+      line-height: 1.1;
+    }
+    .arch-flow {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.7rem;
+      align-items: center;
+    }
+    .arch-node {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 52px;
+      padding: 0.7rem 1rem;
+      background: #fff;
+      border: 2px solid #2d2d2d;
+      border-radius: 18px 24px 16px 22px;
+      box-shadow: 2px 2px 0px 0px #2d2d2d;
+      font-family: 'Patrick Hand', cursive;
+      font-size: 1rem;
+      line-height: 1.2;
+      text-align: center;
+    }
+    .arch-arrow {
+      text-align: center;
+      font-family: 'Kalam', cursive;
+      font-size: 1.05rem;
+      font-weight: 700;
+      line-height: 1.1;
+    }
+    .arch-arrow .arrow {
+      display: block;
+      font-size: 1.5rem;
+      line-height: 1;
+      margin-top: 0.1rem;
+    }
     ul, ol { padding-left: 1.5rem; }
     li { margin: 0.3rem 0; }
     p + p { margin-top: 0.75rem; }
@@ -279,6 +338,33 @@
             </tr>
           </tbody>
         </table>
+        -->
+        <!-- For the Architecture card, prefer a vertical stack, e.g.:
+        <div class="architecture">
+          <div class="arch-layer">
+            <div class="arch-layer-title">Presentation Layer</div>
+            <div class="arch-flow">
+              <div class="arch-node">Web App</div>
+              <div class="arch-node">Admin UI</div>
+            </div>
+          </div>
+          <div class="arch-arrow">HTTPS / REST<span class="arrow">↓</span></div>
+          <div class="arch-layer">
+            <div class="arch-layer-title">Service Layer</div>
+            <div class="arch-flow">
+              <div class="arch-node">Auth Service</div>
+              <div class="arch-node">Payment Service</div>
+            </div>
+          </div>
+          <div class="arch-arrow"><span class="arrow">↓</span></div>
+          <div class="arch-layer">
+            <div class="arch-layer-title">Data Layer</div>
+            <div class="arch-flow">
+              <div class="arch-node">MySQL</div>
+              <div class="arch-node">Redis</div>
+            </div>
+          </div>
+        </div>
         -->
       </div>
     </div>
