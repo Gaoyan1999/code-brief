@@ -170,7 +170,7 @@ Draw a layered high-level diagram that optimizes for flow clarity, not component
 - What communication style connects the layers? HTTPS, REST, GraphQL, function call, event bus, queue, reactive update, compiler pass, etc.
 - What is the final destination? Rendered UI, service response, persisted data, emitted artifact, external side effect
 
-Structure the diagram around 3–5 layers. Label each layer clearly and place 2–5 core components inside it when evidence exists. Prefer stable responsibilities over implementation detail.
+Structure the diagram vertically from top to bottom around 3–5 layers. Do not lay the primary architecture left-to-right unless the user explicitly asks for that. Label each layer clearly and place 1–4 core components inside it when evidence exists. Prefer stable responsibilities over implementation detail.
 
 Choose the layer model that best fits the project type:
 - **Application**: `Entry / Presentation -> Communication -> Service / Domain -> Data / Infrastructure`
@@ -181,10 +181,12 @@ Choose the layer model that best fits the project type:
 - **Platform / Infrastructure**: `Operator / Client -> API / Control Plane -> Workers / Data Plane -> Storage / Network / Runtime`
 - **Pipeline / Data system**: `Sources -> Ingestion -> Processing / Orchestration -> Storage / Serving -> Outputs / Consumers`
 
-Keep it concise. A simple project may only need 3 boxes. Do not mention files, functions, classes, or low-level implementation details here. The goal is to make the main flow legible at a glance.
+Inside each layer, show simple module boxes with short names only, such as `Web App`, `API Gateway`, `Payment Service`, `HTML Renderer`, `Slide Generator`, `MySQL`, or `Redis`. Do not turn the diagram into prose. Avoid bullets, long descriptions, user stories, or business workflow narration inside the boxes.
 
-**Markdown**: render as ASCII (Unicode box-drawing chars ┌─┐ │ └─┘ ▼ ►) inside a fenced code block, under ~20 lines.
-**HTML**: render as HTML `<div>` boxes styled inline — each node as a `<div class="arch-node">`, arrows as styled connectors — so the layout can be extended with CSS/JS later. Wrap the whole diagram in `<div class="architecture">`.
+Keep it concise. A simple project may only need 3 boxes. Do not mention files, functions, classes, or low-level implementation details here. The goal is to make the main flow legible at a glance and the main code or functional modules easy to identify.
+
+**Markdown**: render as ASCII (Unicode box-drawing chars ┌─┐ │ └─┘ ▼ ►) inside a fenced code block, under ~20 lines, with layers stacked vertically.
+**HTML**: render as a top-to-bottom layout inside `<div class="architecture">`. Use one `<div class="arch-layer">` per layer, put module boxes inside it with `<div class="arch-node">Short Module Name</div>`, and separate layers with a simple `<div class="arch-arrow">↓</div>` or a short connector label such as `HTTPS / REST` above the arrow. Do not place paragraph text or bullet lists inside architecture boxes.
 
 **Quick start**
 Commands to install dependencies and run the project, pulled from README, Makefile, or `package.json` scripts. Infer standard patterns where needed (e.g. `npm install && npm run dev`). If genuinely unknown, say so rather than inventing commands.
@@ -235,7 +237,7 @@ Write standard GitHub-flavored Markdown. Use `#` for project name and `##` for e
 
 Produce a single self-contained HTML file. All CSS inline. Mermaid.js loaded from CDN. Save as `OVERVIEW.html` in the project root.
 
-If the environment supports opening local files in a browser or preview, you may open `OVERVIEW.html` after writing it. If not, stop after saving the file.
+After writing `OVERVIEW.html`, open it automatically in the system's default browser. If the environment truly cannot open a browser, stop after saving the file.
 
 Read `template.html` (in the same directory as this skill file) to get the exact template structure. Fill in `[Project Name]`, `[subtitle]`, badge content, sidebar links, and section bodies. Only include sidebar links for cards that were generated.
 In the top banner, render the major stack items as linked badges that include both a logo and a text label.
